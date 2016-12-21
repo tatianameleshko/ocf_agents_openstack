@@ -316,16 +316,14 @@ nova_network_stop() {
 
     # Try SIGTERM
     pid=`cat $OCF_RESKEY_pid`
-    #ocf_log err "1111111 ${pid} "
-    #pid="$pid `ps ax | grep -v grep | grep 'dnsmasq' | cut -c1-5`"
-    #pid=`echo "$pid" | sed 's/#012/ /'`
-    #ocf_log err "222222 ${pid} "
+    pid2="`ps ax | grep -v grep | grep 'dnsmasq' | cut -c1-5`"
     ocf_run kill -s TERM $pid
     rc=$?
     if [ $rc -ne 0 ]; then
         ocf_log err "OpenStack Nova Network (nova-network) couldn't be stopped"
         exit $OCF_ERR_GENERIC
     fi
+    ocf_run kill -s TERM $pid2
 
     # stop waiting
     shutdown_timeout=15
