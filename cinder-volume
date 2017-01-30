@@ -230,7 +230,7 @@ cinder_volume_monitor() {
                 return $OCF_NOT_RUNNING
             fi
         done
-    else
+    #else
        # Check the connections according to the PID
        # We are sure to hit the scheduler process and not other nova process
        # with the same connection behavior (for example nova-cert)
