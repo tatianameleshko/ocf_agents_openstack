@@ -190,11 +190,11 @@ cinder_api_status() {
 }
 
 cinder_api_monitor() {
-    local rc
-    #local token
-    #local http_code
-    local pid
-    local api_amqp_check
+#    local rc
+#    local token
+#    local http_code
+#    local pid
+#    local api_amqp_check
 
     cinder_api_status
     rc=$?
@@ -204,7 +204,7 @@ cinder_api_monitor() {
         return $rc
     fi
 
-    pid=`cat $OCF_RESKEY_pid`
+    #pid=`cat $OCF_RESKEY_pid`
 
     # Check detailed information about this specific version of the API.
     #if [ -n "$OCF_RESKEY_os_username" ] && [ -n "$OCF_RESKEY_os_password" ] \
