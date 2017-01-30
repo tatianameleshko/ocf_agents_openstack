@@ -238,6 +238,7 @@ cinder_volume_monitor() {
         volume_amqp_check=`netstat -punt | \
             grep -s "$OCF_RESKEY_amqp_server_port" | grep -s "$pid" | \
             grep -qs "ESTABLISHED"`
+        ocf_log err "?????? $pid ??????????"
         rc=$?
         if [ $rc -ne 0 ]; then
             ocf_log err "Cinder Volume is not connected to the AMQP server:" \
