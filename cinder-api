@@ -204,7 +204,7 @@ cinder_api_monitor() {
         return $rc
     fi
 
-    #pid=`cat $OCF_RESKEY_pid`
+    pid=`cat $OCF_RESKEY_pid`
 
     # Check detailed information about this specific version of the API.
     #if [ -n "$OCF_RESKEY_os_username" ] && [ -n "$OCF_RESKEY_os_password" ] \
@@ -219,15 +219,15 @@ cinder_api_monitor() {
     #        tr ',' '\n' | grep '"id":' | cut -d'"' -f4 | head --lines 1`
     #    http_code=`curl --write-out %{http_code} --output /dev/null \
     #        -sH "X-Auth-Token: $token" $OCF_RESKEY_url`
-#        api_amqp_check=`netstat -punt | \
-#            grep -s "5672" | grep -s "$pid" | \
-#            grep -qs "ESTABLISHED"`
-#        rc=$?
-#        if [ $rc -ne 0 ] || [ $http_code -ne 200 ]; then
-#            ocf_log err "Failed to connect to the OpenStack Cinder API" \
-#                "(cinder-api): $rc and $http_code"
-#            return $OCF_NOT_RUNNING
-#        fi
+        api_amqp_check=`netstat -punt | \
+            grep -s "5672" | grep -s "$pid" | \
+            grep -qs "ESTABLISHED"`
+        rc=$?
+        if [ $rc -ne 0 ] || [ $http_code -ne 200 ]; then
+            ocf_log err "Failed to connect to the OpenStack Cinder API" \
+                "(cinder-api): $rc and $http_code"
+            return $OCF_NOT_RUNNING
+        fi
 #fi
 
     ocf_log debug "OpenStack Cinder API (cinder-api) monitor succeeded"
