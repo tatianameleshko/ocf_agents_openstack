@@ -40,14 +40,14 @@ OCF_RESKEY_config_default="/etc/cinder/cinder.conf"
 OCF_RESKEY_user_default="cinder"
 OCF_RESKEY_pid_default="$HA_RSCTMP/$OCF_RESOURCE_INSTANCE.pid"
 OCF_RESKEY_url_default="http://127.0.0.1:8776/v1/"
-OCF_RESKEY_keystone_get_token_url_def="http://127.0.0.1:5000/v2.0/tokens"
+#OCF_RESKEY_keystone_get_token_url_def="http://127.0.0.1:5000/v2.0/tokens"
 
 : ${OCF_RESKEY_binary=${OCF_RESKEY_binary_default}}
 : ${OCF_RESKEY_config=${OCF_RESKEY_config_default}}
 : ${OCF_RESKEY_user=${OCF_RESKEY_user_default}}
 : ${OCF_RESKEY_pid=${OCF_RESKEY_pid_default}}
 : ${OCF_RESKEY_url=${OCF_RESKEY_url_default}}
-: ${OCF_RESKEY_keystone_get_token_url=${OCF_RESKEY_keystone_get_token_url_def}}
+#: ${OCF_RESKEY_keystone_get_token_url=${OCF_RESKEY_keystone_get_token_url_def}}
 
 #######################################################################
 
@@ -120,39 +120,6 @@ The default URL to use for monitoring this instance (cinder-api) via curl. Impor
 </longdesc>
 <shortdesc lang="en">OpenStack Cinder API (cinder-api) monitor url</shortdesc>
 <content type="string" default="${OCF_RESKEY_url_default}" />
-</parameter>
-
-<parameter name="keystone_get_token_url" unique="0" required="0">
-<longdesc lang="en">
-The default URL to use to acquire a Cinder API (cinder-api) token for monitoring this instance
-of OpenStack Cinder API (cinder-api)
-</longdesc>
-<shortdesc lang="en">OpenStack Cinder API (cinder-api) url</shortdesc>
-<content type="string" default="${OCF_RESKEY_keystone_get_token_url_def}" />
-</parameter>
-
-<parameter name="os_username" unique="0" required="0">
-<longdesc lang="en">
-The username to use when connecting with Cinder API (cinder-api) for monitoring purposes
-</longdesc>
-<shortdesc lang="en">Cinder API (cinder-api) monitoring login</shortdesc>
-<content type="string" />
-</parameter>
-
-<parameter name="os_password" unique="0" required="0">
-<longdesc lang="en">
-The password to use when connecting Cinder API (cinder-api) for monitoring purposes
-</longdesc>
-<shortdesc lang="en">Cinder API (cinder-api) monitoring password</shortdesc>
-<content type="string" />
-</parameter>
-
-<parameter name="os_tenant_name" unique="0" required="0">
-<longdesc lang="en">
-The tenant to use when connecting Cinder API (cinder-api) for monitoring purposes
-</longdesc>
-<shortdesc lang="en">Cinder API (cinder-api) monitoring tenant</shortdesc>
-<content type="string" />
 </parameter>
 
 <parameter name="additional_parameters" unique="0" required="0">
@@ -234,8 +201,10 @@ cinder_api_status() {
 
 cinder_api_monitor() {
     local rc
-    local token
-    local http_code
+    #local token
+    #local http_code
+    local pid
+    local volume_amqp_check
 
     cinder_api_status
     rc=$?
@@ -245,19 +214,24 @@ cinder_api_monitor() {
         return $rc
     fi
 
+    pid=`cat $OCF_RESKEY_pid`
+
     # Check detailed information about this specific version of the API.
-    if [ -n "$OCF_RESKEY_os_username" ] && [ -n "$OCF_RESKEY_os_password" ] \
-        && [ -n "$OCF_RESKEY_os_tenant_name" ] \
-        && [ -n "$OCF_RESKEY_keystone_get_token_url" ]; then
-        token=`curl -s -d  "{\"auth\":{\"passwordCredentials\": \
-            {\"username\": \"$OCF_RESKEY_os_username\", \
-            \"password\": \"$OCF_RESKEY_os_password\"}, \
-            \"tenantName\": \"$OCF_RESKEY_os_tenant_name\"}}" \
-            -H "Content-type: application/json" \
-            $OCF_RESKEY_keystone_get_token_url | \
-            tr ',' '\n' | grep '"id":' | cut -d'"' -f4 | head --lines 1`
-        http_code=`curl --write-out %{http_code} --output /dev/null \
-            -sH "X-Auth-Token: $token" $OCF_RESKEY_url`
+    #if [ -n "$OCF_RESKEY_os_username" ] && [ -n "$OCF_RESKEY_os_password" ] \
+    #    && [ -n "$OCF_RESKEY_os_tenant_name" ] \
+    #    && [ -n "$OCF_RESKEY_keystone_get_token_url" ]; then
+    #    token=`curl -s -d  "{\"auth\":{\"passwordCredentials\": \
+    #        {\"username\": \"$OCF_RESKEY_os_username\", \
+    #        \"password\": \"$OCF_RESKEY_os_password\"}, \
+    #        \"tenantName\": \"$OCF_RESKEY_os_tenant_name\"}}" \
+    #        -H "Content-type: application/json" \
+    #        $OCF_RESKEY_keystone_get_token_url | \
+    #        tr ',' '\n' | grep '"id":' | cut -d'"' -f4 | head --lines 1`
+    #    http_code=`curl --write-out %{http_code} --output /dev/null \
+    #        -sH "X-Auth-Token: $token" $OCF_RESKEY_url`
+        volume_amqp_check=`netstat -punt | \
+            grep -s "5672" | grep -s "$pid" | \
+            grep -qs "ESTABLISHED"`
         rc=$?
         if [ $rc -ne 0 ] || [ $http_code -ne 200 ]; then
             ocf_log err "Failed to connect to the OpenStack Cinder API" \
@@ -287,7 +261,6 @@ cinder_api_start() {
         --config-file=$OCF_RESKEY_config \
         $OCF_RESKEY_additional_parameters"' >> /dev/null 2>&1 & echo $!' \
         > $OCF_RESKEY_pid
-    ocf_log err "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! $OCF_RESKEY_pid !!!!!!!!!!!!!!!!!!!"
     # Spin waiting for the server to come up.
     # Let the CRM/LRM time us out if required
     while true; do
