@@ -204,7 +204,7 @@ cinder_api_monitor() {
         return $rc
     fi
 
-    pid=`cat $OCF_RESKEY_pid`
+    #pid=`cat $OCF_RESKEY_pid`
 
     # Check detailed information about this specific version of the API.
     #if [ -n "$OCF_RESKEY_os_username" ] && [ -n "$OCF_RESKEY_os_password" ] \
@@ -227,7 +227,7 @@ cinder_api_monitor() {
 #            ocf_log err "Failed to connect to the OpenStack Cinder API" \
 #                "(cinder-api): $rc and $http_code"
 #            return $OCF_NOT_RUNNING
-        fi
+#        fi
 #fi
 
     ocf_log debug "OpenStack Cinder API (cinder-api) monitor succeeded"
