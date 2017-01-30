@@ -39,7 +39,7 @@ OCF_RESKEY_binary_default="cinder-api"
 OCF_RESKEY_config_default="/etc/cinder/cinder.conf"
 OCF_RESKEY_user_default="cinder"
 OCF_RESKEY_pid_default="$HA_RSCTMP/$OCF_RESOURCE_INSTANCE.pid"
-OCF_RESKEY_url_default="http://127.0.0.1:8776/v1/"
+#OCF_RESKEY_url_default="http://127.0.0.1:8776/v1/"
 #OCF_RESKEY_keystone_get_token_url_def="http://127.0.0.1:5000/v2.0/tokens"
 
 : ${OCF_RESKEY_binary=${OCF_RESKEY_binary_default}}
@@ -112,14 +112,6 @@ The pid file to use for this OpenStack Cinder API (cinder-api) instance
 </longdesc>
 <shortdesc lang="en">OpenStack Cinder API (cinder-api) pid file</shortdesc>
 <content type="string" default="${OCF_RESKEY_pid_default}" />
-</parameter>
-
-<parameter name="url" unique="0" required="0">
-<longdesc lang="en">
-The default URL to use for monitoring this instance (cinder-api) via curl. Important note: the monitor function doesn't accept http return code different than 200, for instance redirection code will generate an error. Don't forget the '/' at the end of your url endpoint. For example http://127.0.0.1:8776/v1 won't work and http://127.0.0.1:8776/v1/ will.
-</longdesc>
-<shortdesc lang="en">OpenStack Cinder API (cinder-api) monitor url</shortdesc>
-<content type="string" default="${OCF_RESKEY_url_default}" />
 </parameter>
 
 <parameter name="additional_parameters" unique="0" required="0">
