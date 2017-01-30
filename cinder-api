@@ -46,7 +46,7 @@ OCF_RESKEY_pid_default="$HA_RSCTMP/$OCF_RESOURCE_INSTANCE.pid"
 : ${OCF_RESKEY_config=${OCF_RESKEY_config_default}}
 : ${OCF_RESKEY_user=${OCF_RESKEY_user_default}}
 : ${OCF_RESKEY_pid=${OCF_RESKEY_pid_default}}
-: ${OCF_RESKEY_url=${OCF_RESKEY_url_default}}
+#: ${OCF_RESKEY_url=${OCF_RESKEY_url_default}}
 #: ${OCF_RESKEY_keystone_get_token_url=${OCF_RESKEY_keystone_get_token_url_def}}
 
 #######################################################################
@@ -73,7 +73,6 @@ meta_data() {
 <!DOCTYPE resource-agent SYSTEM "ra-api-1.dtd">
 <resource-agent name="cinder-api">
 <version>1.0</version>
-
 <longdesc lang="en">
 Resource agent for the OpenStack Cinder API Service (cinder-api)
 May manage a cinder-api instance or a clone set that
@@ -123,12 +122,11 @@ Additional parameters to pass on to the OpenStack Cinder API (cinder-api)
 </parameter>
 
 </parameters>
-
 <actions>
 <action name="start" timeout="20" />
 <action name="stop" timeout="20" />
 <action name="status" timeout="20" />
-<action name="monitor" timeout="10" interval="5" />
+<action name="monitor" timeout="10" interval="10" />
 <action name="validate-all" timeout="5" />
 <action name="meta-data" timeout="5" />
 </actions>
@@ -196,7 +194,7 @@ cinder_api_monitor() {
     #local token
     #local http_code
     local pid
-    local volume_amqp_check
+    local api_amqp_check
 
     cinder_api_status
     rc=$?
@@ -221,16 +219,16 @@ cinder_api_monitor() {
     #        tr ',' '\n' | grep '"id":' | cut -d'"' -f4 | head --lines 1`
     #    http_code=`curl --write-out %{http_code} --output /dev/null \
     #        -sH "X-Auth-Token: $token" $OCF_RESKEY_url`
-        volume_amqp_check=`netstat -punt | \
-            grep -s "5672" | grep -s "$pid" | \
-            grep -qs "ESTABLISHED"`
-        rc=$?
-        if [ $rc -ne 0 ] || [ $http_code -ne 200 ]; then
-            ocf_log err "Failed to connect to the OpenStack Cinder API" \
-                "(cinder-api): $rc and $http_code"
-            return $OCF_NOT_RUNNING
+#        api_amqp_check=`netstat -punt | \
+#            grep -s "5672" | grep -s "$pid" | \
+#            grep -qs "ESTABLISHED"`
+#        rc=$?
+#        if [ $rc -ne 0 ] || [ $http_code -ne 200 ]; then
+#            ocf_log err "Failed to connect to the OpenStack Cinder API" \
+#                "(cinder-api): $rc and $http_code"
+#            return $OCF_NOT_RUNNING
         fi
-    fi
+#fi
 
     ocf_log debug "OpenStack Cinder API (cinder-api) monitor succeeded"
     return $OCF_SUCCESS
