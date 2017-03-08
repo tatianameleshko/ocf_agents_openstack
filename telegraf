@@ -21,7 +21,7 @@
 
 # Fill in some defaults if no values are specified
 
-OCF_RESKEY_binary_default="nova-api-metadata"
+OCF_RESKEY_binary_default="telegraf"
 OCF_RESKEY_config_default="/etc/telegraf/telegraf.conf"
 OCF_RESKEY_user_default="telegraf"
 OCF_RESKEY_pid_default="$HA_RSCTMP/$OCF_RESOURCE_INSTANCE.pid"
