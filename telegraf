@@ -192,7 +192,7 @@ telegraf_start() {
     fi
 
     su ${OCF_RESKEY_user} -s /bin/sh -c "/usr/bin/${OCF_RESKEY_binary} \
-        -config $OCF_RESKEY_config -config-directory /etc/telegraf/telegraf.d \
+        -pidfile /var/run/telegraf/telegraf.pid -config $OCF_RESKEY_config -config-directory /etc/telegraf/telegraf.d \
         $OCF_RESKEY_additional_parameters"' >> /dev/null 2>&1 & echo $!' \
         > $OCF_RESKEY_pid
 
