@@ -14,7 +14,7 @@
 #######################################################################
 # Initialization:
 
-: ${OCF_FUNCTIONS_DIR=${OCF_ROOT}/lib/heartbeat}
+: ${OCF_FUNCTIONS_DIR=/usr/lib/ocf/lib/heartbeat}
 . ${OCF_FUNCTIONS_DIR}/ocf-shellfuncs
 
 #######################################################################
@@ -191,8 +191,8 @@ telegraf_start() {
         return $OCF_SUCCESS
     fi
 
-    su ${OCF_RESKEY_user} -s /bin/sh -c "${OCF_RESKEY_binary} \
-        --config-file=$OCF_RESKEY_config \
+    su ${OCF_RESKEY_user} -s /bin/sh -c "/usr/bin/${OCF_RESKEY_binary} \
+        -config $OCF_RESKEY_config -config-directory /etc/telegraf/telegraf.d \
         $OCF_RESKEY_additional_parameters"' >> /dev/null 2>&1 & echo $!' \
         > $OCF_RESKEY_pid
 
