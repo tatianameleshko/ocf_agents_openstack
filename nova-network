@@ -256,12 +256,12 @@ nova_network_monitor() {
             grep -qs "ESTABLISHED"`
         rc_amqp=$?
         #if [ $rc_amqp -ne 0 ] || [ $rc_db -ne 0 ]; then
-        if [ $rc_amqp -ne 0 ] ; then
-            ocf_log err "Nova Network is not connected to the AMQP server" \
-                "and/or the database server: AMQP connection test returned" \
-                "$rc_amqp and database connection test returned $rc_db"
-            return $OCF_NOT_RUNNING
-        fi
+        #if [ $rc_amqp -ne 0 ] ; then
+        #    ocf_log err "Nova Network is not connected to the AMQP server" \
+        #        "and/or the database server: AMQP connection test returned" \
+        #        "$rc_amqp and database connection test returned $rc_db"
+        #    return $OCF_NOT_RUNNING
+        #fi
     fi
 
     ocf_log debug "OpenStack Nova Network (nova-network) monitor succeeded"
